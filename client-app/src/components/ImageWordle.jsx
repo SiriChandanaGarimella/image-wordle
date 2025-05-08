@@ -290,7 +290,7 @@ const ImageWordle = () => {
   };
   
   return (
-    <div className="bg-gradient-to-b from-slate-900 to-indigo-950 min-h-screen p-4 md:p-8 text-white font-sans">
+    <div className="bg-gradient-to-b from-black to-indigo-950 min-h-screen p-4 md:p-8 text-white font-sans">
       {/* Success Modal */}
       {showSuccess && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-sm">
