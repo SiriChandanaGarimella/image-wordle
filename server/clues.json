@@ -1,0 +1,298 @@
+{
+  "diamond": {
+    "Medium": [
+      "This precious gemstone is known for its exceptional brilliance and hardness.",
+      "This precious gemstone is often set in jewelry to symbolize love and commitment.",
+      "This object is known for its exceptional hardness and brilliance, making it a popular choice for jewelry."
+    ]
+  },
+  "tornado": {
+    "Medium": [
+      "This natural phenomenon is a rapidly rotating column of air that is often accompanied by a funnel-shaped cloud.",
+      "This natural disaster is known for its destructive winds and swirling funnel shape, often depicted in movies and news reports.",
+      "This natural disaster is characterized by its rapidly rotating column of air extending from a thunderstorm to the ground."
+    ],
+    "Easy": [
+      "This is a spinning, powerful wind that can cause a lot of damage.",
+      "This natural disaster can lift things up and spin them around very quickly.",
+      "This weather phenomenon is known for its swirling winds that can cause destruction and are often visible as a funnel-shaped cloud."
+    ]
+  },
+  "planet": {
+    "Medium": [
+      "This object in our solar system orbits around a star and is not a star itself.",
+      "This object is typically found orbiting a star and is often depicted as a round celestial body in space.",
+      "This object orbits around a star and is large enough to have its own gravity, shaping it into a spherical form."
+    ],
+    "Hard": [
+      "Amongst the celestial dancers, this silent wanderer gracefully pirouettes, guided by unseen strings in the cosmic ballet.",
+      "Where celestial bodies twirl, a cosmic dance floor for the stars to waltz upon.",
+      "In the solar system's orchestra, this celestial body dances to a mysterious tune, shrouded in layers of gas and ice."
+    ]
+  },
+  "horse": {
+    "Hard": [
+      "Majestic companion of the open fields, galloping with grace and power in the wind's gentle embrace.",
+      "Gallop to victory in a race without a saddle.",
+      "Galloping with the wind, a creature of the pasture, known for the rhythmic beats of its hooves."
+    ]
+  },
+  "river": {
+    "Hard": [
+      "A winding ribbon of nature's tears, flowing through earth's embrace.",
+      "Where currents converge, a silvery pathway unfolds, guiding lost wanderers towards distant shores.",
+      "A winding serpent, caressing the earth in its fluid embrace, a bearer of secrets whispered by the breeze."
+    ]
+  },
+  "bridge": {
+    "Hard": [
+      "A pathway that unites realms, where footprints linger in the air.",
+      "A pathway above flowing veins, connecting realms in suspension.",
+      "Where gentle giants meet halfway, a path of metal and stone rises above the water's mirror."
+    ],
+    "Medium": [
+      "It connects two separate areas to allow for easy passage.",
+      "This structure is often built to connect two separate pieces of land or to allow passage over a body of water.",
+      "This object connects two separate land masses or spans a body of water to allow for safe passage."
+    ]
+  },
+  "space": {
+    "Hard": [
+      "Amidst vast emptiness, boundless opportunities await for the curious explorer.",
+      "Within these confines, celestial treasures are observed and secrets of the universe are unraveled.",
+      "Where shadows dance freely and time loses its grip, a boundless realm of emptiness stretches infinitely."
+    ]
+  },
+  "stadium": {
+    "Hard": [
+      "Where echoes of cheers and dreams collide, a congregation of anticipation gathers.",
+      "Where spectators gather to witness a grand display, it also serves as a temporary refuge from the elements.",
+      "Where fans gather, cheers ignite, and gladiators of modern times clash in a grand arena of concrete and steel."
+    ]
+  },
+  "sunset": {
+    "Hard": [
+      "As day bids farewell, a blaze fades into the horizon, casting a golden embrace before the shadows triumph.",
+      "As darkness approaches, it becomes a canvas for nature's farewell masterpiece.",
+      "When the day's fiery orb bids adieu, nature's canvas is painted in hues that blend and fuse, marking the end of light's reign."
+    ],
+    "Easy": [
+      "This beautiful sight happens when the sun goes below the horizon in the evening.",
+      "This object marks the end of the day and is often admired for its beautiful colors in the sky.",
+      "This object can be seen when the sky turns a beautiful array of colors just before it gets dark."
+    ],
+    "Medium": [
+      "This natural phenomenon marks the end of the day with a colorful display in the sky.",
+      "This object is often admired for its beautiful colors and seen at the end of the day, marking the transition from day to night.",
+      "At this time of day, the sky is painted with a beautiful array of warm colors, creating a serene and picturesque scene."
+    ]
+  },
+  "garden": {
+    "Hard": [
+      "Where flowers bloom and insects roam, a canvas of nature's splendor unfolds under the sun's loving gaze.",
+      "In this place, nature's canvas blooms under the watchful eye of the caretaker.",
+      "A place where blooms whisper secrets to the wind, guarded by earth's embrace and adorned with nature's palette."
+    ]
+  },
+  "fruit": {
+    "Hard": [
+      "Harvested from nature's embrace, a colorful gift for the senses, offering both sweetness and tartness in a single bite.",
+      "A colorful messenger from the branches, a juicy temptation for the taste buds, but also a natural dye for fabrics.",
+      "A colorful garden gem, the bearer of nature's sweet secrets, coveted by both critters and human tongues alike."
+    ]
+  },
+  "train": {
+    "Hard": [
+      "Rushing metal serpent, carrying dreams through time and space.",
+      "Tracks laid to guide a metallic procession of interconnected carriages.",
+      "A metallic serpent that devours distance, leaving a trail of steel whispers in its wake."
+    ],
+    "Medium": [
+      "This method of transportation typically consists of a series of connected carriages that run on tracks.",
+      "This object is often used to transport people and goods along designated tracks.",
+      "This object typically consists of a series of connected compartments that move along a set of tracks."
+    ],
+    "Easy": [
+      "This object runs on tracks and transports people and goods from one place to another.",
+      "You can ride on this to travel from one place to another on a set track.",
+      "This object has long cars that connect together and runs on tracks."
+    ]
+  },
+  "volcano": {
+    "Hard": [
+      "Where fiery mountains breathe and earth's fury is unveiled, nature's wrath erupts in a spectacular dance of destruction and creation.",
+      "A fiery sculptor of the earth's canvas, reshaping landscapes with its molten touch.",
+      "Fiery depths spew forth earth's rage, a mountain of turmoil and ash."
+    ]
+  },
+  "mouse": {
+    "Hard": [
+      "Invisible whiskers detect the subtle vibrations, guiding movements in the hidden realm.",
+      "Navigating the digital maze, this tool scurries unseen, clicking through virtual corridors.",
+      "Whiskers twitching in the shadow of technology, this small creature scurries across the digital realm."
+    ]
+  },
+  "music": {
+    "Medium": [
+      "This involves a harmonious arrangement of sounds that can evoke emotions and convey messages to listeners.",
+      "This object is often used to evoke emotions and create a mood in various forms of entertainment.",
+      "This object often consists of a combination of different notes and rhythms that can evoke various emotions in listeners."
+    ],
+    "Hard": [
+      "Echoes of emotions intertwined in rhythmic patterns, guiding the symphony of existence.",
+      "Harmonious vibrations that stir emotions, transcending language barriers.",
+      "Whispers of the wind, painting vivid colors on the canvas of silence."
+    ]
+  },
+  "cloud": {
+    "Medium": [
+      "This object in the sky often appears as a fluffy, white mass and can bring rain or shade on a sunny day.",
+      "This object is often used to store and access data remotely, allowing users to access files and applications from any device with an internet connection.",
+      "This object can change shape and size as it floats across the sky."
+    ],
+    "Hard": [
+      "I drift aimlessly, shape-shifting with whimsical elegance, a soft canvas painted by the invisible hand of the atmosphere.",
+      "In the digital realm, it serves as a veil for data privacy.",
+      "Observe the sky's painter, weaving wisps of ephemeral artistry, a canvas in constant flux."
+    ]
+  },
+  "smile": {
+    "Medium": [
+      "This expression is formed by turning up the corners of your mouth to show happiness or amusement.",
+      "This object is often used to express happiness or joy by curving the lips upwards and showing teeth.",
+      "It brightens up your face when you're happy or amused."
+    ],
+    "Hard": [
+      "When joy dances upon the lips, echoes of happiness ripple through.",
+      "Invisible strings pulled at the corners of the face, signaling joy without making a sound.",
+      "A curve adorned with hidden joy, revealing pearly secrets within."
+    ]
+  },
+  "rainbow": {
+    "Medium": [
+      "This colorful arc appears in the sky after a rainfall.",
+      "This colorful natural phenomenon is often used as a symbol of hope and diversity.",
+      "This natural phenomenon is formed by the refraction and dispersion of light in the sky, displaying a beautiful spectrum of colors."
+    ]
+  },
+  "house": {
+    "Hard": [
+      "A sanctuary made of bricks, where memories converge within four walls, echoing laughter and tears alike.",
+      "A place where echoes linger long after shadows have departed.",
+      "Within the walls of shelter, secrets whispered in wooden arms."
+    ]
+  },
+  "compass": {
+    "Medium": [
+      "This object helps you find your way when you're lost by pointing towards the magnetic north.",
+      "This object is a useful tool that helps individuals find their way by pointing towards magnetic north.",
+      "This object is a navigational tool that always points towards the magnetic north."
+    ],
+    "Hard": [
+      "Navigate the cardinal points with a magnet's guidance, as the needle dances to the rhythm of the Earth's invisible embrace.",
+      "Guide through vast seas, yet its dance under a hand reveals more than just cardinal points.",
+      "Navigate the cardinal points, unfaltering in their alignment, guiding the way through unseen realms."
+    ]
+  },
+  "clock": {
+    "Medium": [
+      "This object helps you keep track of time by displaying the hours and minutes.",
+      "This object helps you keep track of the time by displaying numbers and hands on a circular face.",
+      "This object typically has hands that move around a circular face to indicate the time."
+    ],
+    "Hard": [
+      "Tick-tock, the silent keeper of moments, with hands that dance across the glass face, orchestrating the subtle harmony of time.",
+      "A timekeeper's twin, spinning without hands, marks the start of a race amidst cheers.",
+      "Time keeper with hands in a race, never pausing for a moment's grace."
+    ]
+  },
+  "dance": {
+    "Hard": [
+      "Rhythmic movements in harmony with sound, a display of grace and expression that transcends language.",
+      "In a different setting, this rhythmic movement could be mistaken for a secret code.",
+      "Twirling in rhythmic harmony, a celebration of movement and grace."
+    ],
+    "Medium": [
+      "This activity involves moving to music with a combination of rhythm, steps, and often performed in a social setting.",
+      "This activity involves moving to the rhythm of music and often brings people together in celebration or expression of emotions.",
+      "People often move rhythmically to music at social gatherings."
+    ]
+  },
+  "laptop": {
+    "Hard": [
+      "In the digital realm, a portable companion sits atop the knees of a user, unlocking gateways to boundless information and entertainment.",
+      "In a cafe, it transforms into a digital canvas for artists seeking inspiration.",
+      "In the digital realm, it's a portable flat companion that houses a screen and a keyboard, embracing the dance of bytes in its silicon heart."
+    ]
+  },
+  "plant": {
+    "Hard": [
+      "In soil it thrives, stretching towards the sky, a symbol of life intertwined with earth's embrace.",
+      "A vessel for life, offering a refreshing veil in the dry heat.",
+      "Among nature's green companions, a silent dance with the sun, whispering tales of growth and life."
+    ]
+  },
+  "market": {
+    "Medium": [
+      "It is a place where people come together to buy and sell goods and services.",
+      "This place is where goods and services are bought and sold by vendors and customers, often bustling with activity and lively interactions.",
+      "This place is where vendors sell a variety of goods and shoppers can haggle over prices."
+    ],
+    "Hard": [
+      "Where buyers and sellers converge, a dance of supply and demand unfolds in this bustling economic arena.",
+      "Where sellers gather, challenging the luck of those who venture inside.",
+      "Amidst the bustling stalls and transactions, a hub for barter and exchange, where both goods and information flow freely."
+    ]
+  },
+  "island": {
+    "Medium": [
+      "It is a landmass surrounded by water, often home to unique ecosystems and communities.",
+      "This object is a land mass surrounded by water and often a popular destination for vacations.",
+      "It is a landmass surrounded by water on all sides."
+    ]
+  },
+  "dragon": {
+    "Medium": [
+      "This mythical creature is often depicted as a large, reptilian being with wings and the ability to breathe fire.",
+      "This mythical creature is often portrayed as a powerful and fire-breathing being in stories and legends.",
+      "This mythical creature is often depicted with large, powerful wings and the ability to breathe fire."
+    ]
+  },
+  "sunflower": {
+    "Medium": [
+      "This vibrant plant is known for its tall stalks and large, yellow petals that follow the movement of the sun throughout the day.",
+      "This object is often planted in gardens for its tall stalks and large, yellow petals, which are commonly used to create vibrant floral arrangements.",
+      "This object is known for its tall stem and large, vibrant yellow petals that follow the sun throughout the day."
+    ]
+  },
+  "dolphin": {
+    "Hard": [
+      "In the realm where air meets water, a playful spirit dances amidst waves and echoes.",
+      "In the realm of mathematics, this creature could symbolize an elegant curve in motion.",
+      "In the sea's graceful acrobat, find a creature of the waves with a permanent smile, embodying intelligence and agility in its underwater realm."
+    ]
+  },
+  "beach": {
+    "Hard": [
+      "Where waves kiss the land, sand meets the horizon, and seagulls dance in the salty breeze.",
+      "Where the sun kisses the edge of the world, a playground for the grains awaits.",
+      "Where the sun kisses the grains, salty whispers dance along the shore."
+    ]
+  },
+  "winter": {},
+  "forest": {
+    "Hard": [
+      "Whispers of the ancient trees, where shadows dance under the canopy's veil.",
+      "Where trees gather, a complex ecosystem thrives, providing a sanctuary for a variety of creatures.",
+      "Amongst the tangled corridors of emerald, where ancient sentinels whisper secrets to the wind."
+    ]
+  },
+  "turtle": {},
+  "guitar": {
+    "Hard": [
+      "Echoes of melodic vibrations in the hands of a maestro, stirring feelings deep within the soul.",
+      "When accompanied by fingers, this object creates a melodic potion for wandering ears.",
+      "Strings dance at the fingertips, harmonizing an ancient melody."
+    ]
+  }
+}

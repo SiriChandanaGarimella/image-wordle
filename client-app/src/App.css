@@ -1,0 +1,8 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Any additional custom styles that aren't covered by Tailwind can go here */
