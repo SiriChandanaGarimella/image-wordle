@@ -14,8 +14,7 @@ ImageWordle is a fun guessing game where you try to identify a word based on an 
 ## AI Tools We Used
 
 1. **For Word Generation**:
-   - Chooses a word from the provided list
-   - DistilGPT-2 (via Hugging Face) - Creates themed words based on selected categories
+   - DistilGPT-2 (via Hugging Face) - Creates themed words based on selected categories (Alternative)
 
 2. **For Images**: 
    - DALL-E 2 (via OpenAI API) 
