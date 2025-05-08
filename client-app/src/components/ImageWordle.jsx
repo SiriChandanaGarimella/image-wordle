@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Heart, RefreshCw } from 'lucide-react';
+import { Heart, RefreshCw, Info, X, CheckCircle, AlertCircle, Lightbulb } from 'lucide-react';
 
-// ImageWordle component with real API calls
 const ImageWordle = () => {
   const [image, setImage] = useState(null);
   const [guess, setGuess] = useState("");
@@ -18,6 +17,7 @@ const ImageWordle = () => {
   const [sessionId, setSessionId] = useState("");
   const [targetWord, setTargetWord] = useState("");
   const [error, setError] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   
   // API base URL - should point to your Flask backend
   const API_URL = 'http://127.0.0.1:5000/api';
@@ -27,14 +27,14 @@ const ImageWordle = () => {
     setSessionId(`session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
   }, []);
   
-  // Fallback mock hint functionality - renamed to avoid React hook naming confusion
+  // Fallback mock hint functionality
   const applyMockHint = () => {
     if (lives <= 1) {
       setLives(0);
       setGameOver(true);
       setShowFailure(true);
       setTargetWord("CHAIR");
-      setMessage("Game over! You're out of lives. The word was: CHAIR (MOCK DATA)");
+      setMessage("Game over! You're out of lives. The word was: CHAIR");
     } else {
       setLives(lives - 1);
       const hints = [
@@ -45,11 +45,11 @@ const ImageWordle = () => {
       
       const hintsUsed = 5 - lives;
       if (hintsUsed < hints.length) {
-        setHint(`Hint ${hintsUsed + 1}: ${hints[hintsUsed]} (MOCK DATA)`);
-        setMessage(`Hint used! The image is now clearer. You have ${lives - 1} lives remaining. (MOCK DATA)`);
+        setHint(`Hint ${hintsUsed + 1}: ${hints[hintsUsed]}`);
+        setMessage(`Hint used! The image is now clearer. You have ${lives - 1} lives remaining.`);
       } else {
-        setHint("No more hints available. (MOCK DATA)");
-        setMessage(`You've used all available hints. You have ${lives - 1} lives remaining. (MOCK DATA)`);
+        setHint("No more hints available.");
+        setMessage(`You've used all available hints. You have ${lives - 1} lives remaining.`);
       }
     }
   };
@@ -242,7 +242,7 @@ const ImageWordle = () => {
     }
   };
   
-  // Fallback mock functionality for testing when API is unavailable
+  // Mock guess processing
   const processMockGuess = (guessLower) => {
     const correctWord = "chair"; // Example word
     
@@ -250,7 +250,7 @@ const ImageWordle = () => {
     if (guessLower === correctWord) {
       setGameOver(true);
       setShowSuccess(true);
-      setMessage(`Congratulations! You guessed the word '${correctWord}' correctly!`);
+      setMessage(`Congratulations! You guessed the word '${correctWord.toUpperCase()}' correctly!`);
       setGuesses([...guesses, guessLower]);
       setFeedback([...feedback, "🟩C🟩H🟩A🟩I🟩R"]);
     } else {
@@ -270,6 +270,11 @@ const ImageWordle = () => {
         }
       }
       
+      // Add extra characters if the guess is longer than the correct word
+      for (let i = correctWord.length; i < guessLower.length; i++) {
+        feedbackStr += `⬛${guessLower[i].toUpperCase()}`;
+      }
+      
       setGuesses([...guesses, guessLower]);
       setFeedback([...feedback, feedbackStr]);
       
@@ -279,163 +284,35 @@ const ImageWordle = () => {
         setTargetWord(correctWord.toUpperCase());
         setMessage(`Game over! You're out of lives. The word was: ${correctWord.toUpperCase()}`);
       } else {
-        setMessage(`Incorrect guess. Lives remaining: ${newLives} (MOCK DATA)`);
+        setMessage(`Incorrect guess. Lives remaining: ${newLives}`);
       }
     }
   };
   
-  // Handle Enter key press
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && guess.trim()) {
-      submitGuess();
-    }
-  };
-  
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">ImageWordle</h1>
-          <div className="flex items-center space-x-2">
-            {Array(lives).fill().map((_, i) => (
-              <Heart key={i} className="text-red-400 fill-red-400" size={24} />
-            ))}
-            {Array(5 - lives).fill().map((_, i) => (
-              <Heart key={i + lives} className="text-red-200" size={24} />
-            ))}
-            <span className="ml-2 font-bold">{lives}</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-          <div className="space-y-4">
-            <div className="bg-gray-200 rounded-lg p-2 h-80 flex items-center justify-center">
-              {image ? (
-                <img 
-                  src={image} 
-                  alt="Pixelized word clue" 
-                  className="max-h-full max-w-full object-contain"
-                />
-              ) : (
-                <div className="text-gray-500">Start a new game to see an image</div>
-              )}
-            </div>
-            
-            <div className="flex gap-2">
-              <select 
-                className="bg-white border border-gray-300 rounded px-4 py-2 flex-grow"
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-                disabled={loading}
-              >
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
-              
-              <button 
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-1"
-                onClick={startNewGame}
-                disabled={loading}
-              >
-                <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-                {loading ? "Starting..." : "New Game"}
-              </button>
-            </div>
-            
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={guess}
-                onChange={(e) => setGuess(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Enter your guess"
-                className="border border-gray-300 rounded px-4 py-2 flex-grow"
-                disabled={loading || gameOver}
-              />
-              
-              <button 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-                onClick={submitGuess}
-                disabled={loading || gameOver || !guess.trim()}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-            </div>
-            
-            <div className="bg-gray-100 p-4 rounded-lg min-h-12">
-              <div className="font-medium">{message}</div>
-              {error && (
-                <div className="mt-2 text-red-500 flex items-center gap-1">
-                  <span>{error}</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded min-h-24">
-              <h3 className="font-bold text-yellow-800">Hint</h3>
-              <p className="text-yellow-700 whitespace-pre-wrap">{hint}</p>
-            </div>
-            
-            <button 
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded w-full"
-              onClick={useHint}
-              disabled={loading || gameOver}
-            >
-              Use Hint (costs 1 life)
-            </button>
-            
-            <div className="space-y-2">
-              <h3 className="font-bold">Previous Guesses</h3>
-              {guesses.length === 0 ? (
-                <div className="text-gray-500">No guesses yet</div>
-              ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-2 rounded">
-                  {guesses.map((guess, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="uppercase font-mono">{guess}</div>
-                      <div className="ml-4 font-mono text-lg">{feedback[index]}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h3 className="font-bold mb-2">Game Help</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li>Guess the word from the pixelized image</li>
-                <li>Each incorrect guess costs 1 life</li>
-                <li>Use hints to make the image clearer (costs 1 life)</li>
-                <li><span className="bg-green-200 px-1">🟩A</span> = correct letter in correct position</li>
-                <li><span className="bg-yellow-200 px-1">🟨B</span> = correct letter in wrong position</li>
-                <li><span className="bg-gray-200 px-1">⬛C</span> = letter not in the word</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      
+    <div className="bg-gradient-to-b from-slate-900 to-indigo-950 min-h-screen p-4 md:p-8 text-white font-sans">
       {/* Success Modal */}
       {showSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md text-center relative">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-emerald-600 to-teal-800 p-6 rounded-2xl max-w-md w-full shadow-xl border border-emerald-400/20 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold">Success!</h3>
+              <button onClick={() => setShowSuccess(false)} className="text-white/80 hover:text-white">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="flex items-center justify-center mb-6">
+              <CheckCircle size={64} className="text-emerald-300" />
+            </div>
+            <p className="text-center text-xl mb-4">
+              Congratulations! You've guessed the word correctly!
+            </p>
             <button 
-              className="absolute top-2 right-2 text-gray-500"
-              onClick={() => setShowSuccess(false)}
-            >
-              ✕
-            </button>
-            <h2 className="text-3xl font-bold text-green-600 mb-4">Congratulations!</h2>
-            <p className="text-xl mb-6">You successfully guessed the word!</p>
-            <button 
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg text-lg"
               onClick={() => {
                 setShowSuccess(false);
                 startNewGame();
               }}
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-white py-3 rounded-xl font-bold transition-all"
             >
               Play Again
             </button>
@@ -445,38 +322,228 @@ const ImageWordle = () => {
       
       {/* Failure Modal */}
       {showFailure && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md text-center relative">
-            <button 
-              className="absolute top-2 right-2 text-gray-500"
-              onClick={() => setShowFailure(false)}
-            >
-              ✕
-            </button>
-            <h2 className="text-3xl font-bold text-red-600 mb-4">Better Luck Next Time!</h2>
-            <p className="text-xl mb-6">The word was <span className="font-bold">{targetWord}</span></p>
-            <div className="flex gap-4 justify-center">
-              <button 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg"
-                onClick={() => {
-                  setShowFailure(false);
-                  startNewGame();
-                }}
-              >
-                Play Again
-              </button>
-              <button 
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg text-lg"
-                onClick={() => {
-                  setShowFailure(false);
-                }}
-              >
-                Close
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-rose-800 to-red-900 p-6 rounded-2xl max-w-md w-full shadow-xl border border-rose-500/20 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold">Game Over</h3>
+              <button onClick={() => setShowFailure(false)} className="text-white/80 hover:text-white">
+                <X size={24} />
               </button>
             </div>
+            <div className="flex items-center justify-center mb-6">
+              <AlertCircle size={64} className="text-rose-300" />
+            </div>
+            <p className="text-center text-xl mb-2">
+              You've run out of lives!
+            </p>
+            <p className="text-center mb-4">
+              The word was: <span className="font-mono font-bold text-2xl tracking-wider">{targetWord}</span>
+            </p>
+            <button 
+              onClick={() => {
+                setShowFailure(false);
+                startNewGame();
+              }}
+              className="w-full bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold transition-all"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       )}
+      
+      {/* Info Modal */}
+      {showInfoModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-indigo-800 to-violet-900 p-6 rounded-2xl max-w-md w-full shadow-xl border border-indigo-500/20 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold">How to Play</h3>
+              <button onClick={() => setShowInfoModal(false)} className="text-white/80 hover:text-white">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <p>
+                <span className="font-semibold">Goal:</span> Guess the word represented by the blurry image before running out of lives.
+              </p>
+              <div>
+                <span className="font-semibold">Difficulty levels:</span>
+                <ul className="ml-6 mt-1 list-disc">
+                  <li><span className="font-medium text-emerald-300">Easy:</span> Less blur, more common words</li>
+                  <li><span className="font-medium text-yellow-300">Medium:</span> Moderate blur, standard words</li>
+                  <li><span className="font-medium text-rose-300">Hard:</span> Heavy blur, challenging words</li>
+                </ul>
+              </div>
+              <div>
+                <span className="font-semibold">Feedback colors:</span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <span className="bg-green-500 text-black px-2 py-1 rounded">🟩 Right letter, right position</span>
+                  <span className="bg-yellow-500 text-black px-2 py-1 rounded">🟨 Right letter, wrong position</span>
+                  <span className="bg-gray-500 text-white px-2 py-1 rounded">⬛ Wrong letter</span>
+                </div>
+              </div>
+              <p>
+                <span className="font-semibold">Hints:</span> Use hints to get clues about the word or make the image clearer, but each hint costs 1 life.
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowInfoModal(false)}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-bold transition-all mt-4"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
+      
+      <div className="max-w-5xl mx-auto">
+        {/* Header section */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg shadow-lg">
+              <span className="text-3xl">🎨</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
+              ImageWordle
+            </h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center">
+              {Array(lives).fill().map((_, i) => (
+                <Heart key={i} className="text-pink-500 fill-pink-500 -mr-1" size={20} />
+              ))}
+              {Array(5 - lives).fill().map((_, i) => (
+                <Heart key={i + lives} className="text-gray-700 -mr-1" size={20} />
+              ))}
+              <span className="ml-3 font-semibold">{lives}</span>
+            </div>
+            
+            <button 
+              className="bg-indigo-900/50 hover:bg-indigo-800/70 p-2 rounded-full"
+              onClick={() => setShowInfoModal(true)}
+            >
+              <Info size={20} />
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid md:grid-cols-5 gap-6">
+          {/* Left column - Image and controls */}
+          <div className="md:col-span-3 space-y-4">
+            {/* Image container */}
+            <div className="bg-gradient-to-br from-gray-900 to-indigo-900/50 rounded-2xl p-4 flex justify-center">
+              <div className="rounded-xl overflow-hidden flex items-center justify-center border border-indigo-500/30 bg-black/30 shadow-inner">
+                {image ? (
+                  <img 
+                    src={image} 
+                    alt="Pixelized word clue" 
+                    className="w-auto h-auto max-w-full max-h-96"
+                  />
+                ) : (
+                  <div className="text-center p-8 w-64 h-64 flex flex-col items-center justify-center">
+                    <div className="mb-4 text-indigo-300/70">
+                      <RefreshCw size={48} className="mx-auto opacity-60" />
+                    </div>
+                    <p className="text-indigo-200">Start a new game to see the image!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Controls */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <select 
+                className="bg-indigo-950 border border-indigo-500/50 text-indigo-100 rounded-xl px-4 py-3 flex-grow shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+                disabled={loading}
+              >
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+
+              <button 
+                className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold shadow-lg transition-all"
+                onClick={startNewGame}
+                disabled={loading}
+              >
+                <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+                {loading ? "Starting..." : "New Game"}
+              </button>
+            </div>
+            
+            {/* Input and submit */}
+            <div className="relative">
+              <input
+                type="text"
+                value={guess}
+                onChange={(e) => setGuess(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submitGuess()}
+                placeholder="Enter your guess"
+                className="w-full px-5 py-4 pr-28 rounded-xl border border-indigo-500/30 bg-indigo-950/50 text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-indigo-300/50"
+                disabled={loading || gameOver}
+                maxLength={15}
+              />
+              <button 
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all"
+                onClick={submitGuess}
+                disabled={loading || gameOver || !guess.trim()}
+              >
+                Submit
+              </button>
+            </div>
+            
+            {/* Message area */}
+            <div className={`p-4 rounded-xl shadow-inner ${error ? 'bg-red-900/30 border border-red-500/30' : 'bg-indigo-900/30 border border-indigo-500/20'}`}>
+              <div className="font-medium">{message}</div>
+              {error && <div className="text-red-300 mt-2 text-sm">{error}</div>}
+            </div>
+          </div>
+          
+          {/* Right column - Hints and guesses */}
+          <div className="md:col-span-2 space-y-4">
+            {/* Hint box */}
+            <div className="bg-gradient-to-br from-indigo-900/70 to-purple-900/70 rounded-xl p-4 border border-indigo-500/30 shadow-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb size={18} className="text-yellow-400" />
+                <h3 className="font-bold text-lg text-yellow-100">Hint</h3>
+              </div>
+              <p className="whitespace-pre-wrap text-sm mt-2 text-indigo-100">{hint}</p>
+              
+              <button 
+                className="mt-4 bg-gradient-to-r from-yellow-600 to-amber-700 hover:from-yellow-500 hover:to-amber-600 text-white w-full px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition-all"
+                onClick={useHint}
+                disabled={loading || gameOver}
+              >
+                <Lightbulb size={18} />
+                Use Hint (1 life)
+              </button>
+            </div>
+            
+            {/* Guesses */}
+            <div className="bg-gradient-to-br from-gray-900 to-indigo-900/50 rounded-xl p-4 border border-indigo-500/30 shadow-lg">
+              <h3 className="font-bold mb-3 text-lg">Your Guesses</h3>
+              {guesses.length === 0 ? (
+                <p className="text-indigo-300/70 text-center py-4">No guesses yet</p>
+              ) : (
+                <ul className="space-y-2 max-h-80 overflow-y-auto pr-2">
+                  {guesses.map((guess, i) => (
+                    <li 
+                      key={i} 
+                      className="flex justify-between items-center bg-indigo-900/30 p-3 rounded-lg border border-indigo-600/20"
+                    >
+                      <span className="font-mono uppercase tracking-wide">{guess}</span>
+                      <span className="font-mono text-lg tracking-wider">{feedback[i]}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
