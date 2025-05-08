@@ -43,7 +43,7 @@ ImageWordle is a fun guessing game where you try to identify a word based on an 
    ```
 
 2. **Create a Python virtual environment:**
-   ```
+   ```bash
    cd server
    ```
 
@@ -100,7 +100,7 @@ ImageWordle is a fun guessing game where you try to identify a word based on an 
 
 1. **Navigate to the frontend directory:**
    ```bash
-   cd frontend
+   cd client-app
    ```
 
 2. **Install React dependencies:**
