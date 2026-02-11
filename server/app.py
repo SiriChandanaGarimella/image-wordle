@@ -16,9 +16,16 @@ import requests
 from diffusers import StableDiffusionPipeline, DDIMScheduler
 from transformers import pipeline
 import openai
+import nltk
+nltk.download('words', quiet=True)
+nltk.download('wordnet', quiet=True)
+from nltk.corpus import words,wordnet
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+if os.environ.get('FLASK_ENV') == 'production':
+    CORS(app, origins=['https://*.vercel.app'])
+else:
+    CORS(app)
 
 # Configuration constants
 CLUE_CACHE_PATH = os.path.join(os.path.dirname(__file__), "clues.json")
@@ -57,6 +64,10 @@ WORD_CATEGORIES = {
     "volcano": "geography", "elephant": "animal", "tornado": "weather",
     "sunflower": "plant", "compass": "tool"
 }
+
+ENGLISH_WORDS = set(w.lower() for w in words.words())
+ENGLISH_WORDS.update(w.lower() for w in wordnet.words())
+ENGLISH_WORDS.update(w.lower() for w in WORD_LIST)
 
 # Game state storage
 game_states = {}
@@ -139,6 +150,9 @@ def get_random_cached_image():
     except Exception as e:
         print(f"Error loading random cached image: {e}")
         return None
+
+def is_valid_word(word):
+    return word.lower() in ENGLISH_WORDS
 
 def initialize_models():
     """Initialize image generation and text models"""
@@ -517,7 +531,7 @@ def generate_dynamic_hints(word, word_category):
             f"The word has exactly {len(word)} letters."
         ]
 
-def generate_clues(word, num_clues=3, difficulty="Medium"):
+def generate_clues(word, num_clues=2, difficulty="Medium"):
     """Generate clues for the given word based on difficulty level"""
     # Check if already cached
     if word in clue_cache and difficulty in clue_cache[word]:
@@ -651,7 +665,7 @@ def create_new_game(session_id, difficulty):
         blurred_image = apply_obscuring(full_image, difficulty, obscure_type)
         
         # Generate hints specific to the word and difficulty
-        hints = generate_clues(target_word, num_clues=3, difficulty=difficulty)
+        hints = generate_clues(target_word, num_clues=2, difficulty=difficulty)
         
         # Initialize game state
         game_states[session_id] = {
@@ -663,7 +677,7 @@ def create_new_game(session_id, difficulty):
             "guesses": [],
             "feedback": [],
             "hint_index": 0,
-            "available_hints": 3,
+            "available_hints": 2,
             "hints": hints,
             "full_image": full_image,
             "current_image": blurred_image,
@@ -676,7 +690,7 @@ def create_new_game(session_id, difficulty):
         # Return initial game state
         return {
             "success": True,
-            "message": f"New game started! Difficulty: {difficulty}. The secret word has {len(target_word)} letters. You have 5 lives and 3 hints.",
+            "message": f"New game started! Difficulty: {difficulty}. The secret word has {len(target_word)} letters. You have 5 lives and 2 hints.",
             "image": image_to_base64(blurred_image),
             "word_length": len(target_word),
             "guesses": [],
@@ -727,6 +741,18 @@ def process_guess(session_id, guess_word):
         # Clean the guess
         guess = guess_word.lower().strip()
         
+        # Check if it's a valid English word
+        if not is_valid_word(guess):
+            return {
+                "success": False,
+                "message": f"'{guess}' is not a valid English word. Try again!",
+                "image": image_to_base64(game["current_image"]),
+                "guesses": game["guesses"],
+                "feedback": game["feedback"],
+                "lives": game["lives"],
+                "hint": "Click 'Use Hint' to reveal a hint (costs 1 life)" if game["hint_index"] == 0 else f"Hint: {game['hints'][game['hint_index']-1]}",
+                "game_over": False
+            }
         # Check if word is correct length
         if len(guess) != len(game["target_word"]):
             return {
@@ -1059,12 +1085,52 @@ def hint():
             "game_over": False
         })
 
+# Health check and monitoring endpoints
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        "status": "healthy",
+        "timestamp": time.time(),
+        "models_loaded": {
+            "text_classifier": text_classifier is not None,
+            "image_model": image_model is not None
+        },
+        "environment": os.environ.get('FLASK_ENV', 'development')
+    })
+
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint"""
+    return jsonify({
+        "message": "ImageWordle Backend API",
+        "status": "running",
+        "endpoints": ["/api/newgame", "/api/guess", "/api/hint", "/health"],
+        "version": "1.0.0"
+    })
+
 # Run the application
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+    import psutil
+    
+    # Load environment variables
+    if os.path.exists('.env'):
+        load_dotenv()
+    
     # Initialize models and cache
     initialize_models()
     cache_dir = get_cache_directory()
     clue_cache = load_clue_cache()
     
+    # Get port from environment variable (Render sets this automatically)
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Disable debug in production
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+    
+    print(f"Starting ImageWordle backend on port {port}")
+    print(f"Environment: {os.environ.get('FLASK_ENV', 'development')}")
+    
     # Start the server
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

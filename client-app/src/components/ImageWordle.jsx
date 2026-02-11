@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, RefreshCw, Info, X, CheckCircle, AlertCircle, Lightbulb } from 'lucide-react';
+import { Heart, RefreshCw, Info, X, CheckCircle, AlertCircle, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ImageWordle = () => {
   const [image, setImage] = useState(null);
@@ -18,9 +18,13 @@ const ImageWordle = () => {
   const [targetWord, setTargetWord] = useState("");
   const [error, setError] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [wordLength, setWordLength] = useState(0);
+  const [allHints, setAllHints] = useState([]);
+  const [currentHintIndex, setCurrentHintIndex] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
   
   // API base URL - should point to your Flask backend
-  const API_URL = 'http://127.0.0.1:5000/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000/api';
   
   // Generate a session ID on component mount
   useEffect(() => {
@@ -87,6 +91,10 @@ const ImageWordle = () => {
         setShowFailure(false);
         setHint(data.hint);
         setMessage(data.message);
+        setWordLength(data.word_length);
+        setAllHints([]);
+        setGameStarted(true);
+        setCurrentHintIndex(0);
       } else {
         setError(data.message || "Failed to start a new game. Please try again.");
         // Fallback to mock data for testing
@@ -94,9 +102,9 @@ const ImageWordle = () => {
         setLives(5);
         setGuesses([]);
         setFeedback([]);
-        setGameOver(false);
         setShowSuccess(false);
         setShowFailure(false);
+        setGameStarted(false);
         setHint("Click 'Use Hint' to reveal a hint (costs 1 life)");
         setMessage(`New game started! Difficulty: ${difficulty}. The secret word has 5-7 letters. You have 5 lives and 3 hints. (MOCK DATA)`);
       }
@@ -127,6 +135,7 @@ const ImageWordle = () => {
     }
     
     if (gameOver) {
+      setGameStarted(false);
       setMessage("Game is already over! Start a new game.");
       return;
     }
@@ -217,6 +226,11 @@ const ImageWordle = () => {
         setLives(data.lives);
         setMessage(data.message);
         setHint(data.hint);
+        setAllHints(prev => {
+          const updated = [...prev, data.hint];
+          setCurrentHintIndex(updated.length - 1);
+          return updated;
+        });
         
         if (data.game_over) {
           setGameOver(true);
@@ -481,15 +495,15 @@ const ImageWordle = () => {
                 value={guess}
                 onChange={(e) => setGuess(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submitGuess()}
-                placeholder="Enter your guess"
+                placeholder={wordLength ? `Enter a ${wordLength}-letter word` : "Enter your guess"}
                 className="w-full px-5 py-4 pr-28 rounded-xl border border-indigo-500/30 bg-indigo-950/50 text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-indigo-300/50"
-                disabled={loading || gameOver}
+                disabled={loading || gameOver || !gameStarted}
                 maxLength={15}
               />
               <button 
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={submitGuess}
-                disabled={loading || gameOver || !guess.trim()}
+                disabled={loading || gameOver || !guess.trim() || !gameStarted}
               >
                 Submit
               </button>
@@ -509,22 +523,67 @@ const ImageWordle = () => {
               <div className="flex items-center gap-2 mb-2">
                 <Lightbulb size={18} className="text-yellow-400" />
                 <h3 className="font-bold text-lg text-yellow-100">Hint</h3>
+                {allHints.length > 0 && (
+                  <span className="text-xs text-indigo-300 ml-auto">
+                    {currentHintIndex + 1} / {allHints.length}
+                  </span>
+                )}
               </div>
-              <p className="whitespace-pre-wrap text-sm mt-2 text-indigo-100">{hint}</p>
-              
-              <button 
-                className="mt-4 bg-gradient-to-r from-yellow-600 to-amber-700 hover:from-yellow-500 hover:to-amber-600 text-white w-full px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition-all"
+
+              <p className="whitespace-pre-wrap text-sm mt-2 text-indigo-100">
+                {allHints.length > 0 ? allHints[currentHintIndex] : hint}
+              </p>
+
+              {allHints.length > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-3">
+                  <button
+                    onClick={() => setCurrentHintIndex(prev => Math.max(0, prev - 1))}
+                    disabled={currentHintIndex === 0}
+                    className="p-1.5 rounded-lg bg-indigo-800/50 hover:bg-indigo-700/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <div className="flex gap-1.5">
+                    {allHints.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentHintIndex(i)}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          i === currentHintIndex ? 'bg-yellow-400' : 'bg-indigo-600'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCurrentHintIndex(prev => Math.min(allHints.length - 1, prev + 1))}
+                    disabled={currentHintIndex === allHints.length - 1}
+                    className="p-1.5 rounded-lg bg-indigo-800/50 hover:bg-indigo-700/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              )}
+
+              <button
+                className="mt-4 bg-gradient-to-r from-yellow-600 to-amber-700 hover:from-yellow-500 hover:to-amber-600 text-white w-full px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={useHint}
-                disabled={loading || gameOver}
+                disabled={loading || gameOver || !gameStarted}
               >
                 <Lightbulb size={18} />
-                Use Hint (1 life)
+                Use Hint ({2 - allHints.length} remaining)
               </button>
             </div>
             
             {/* Guesses */}
             <div className="bg-gradient-to-br from-gray-900 to-indigo-900/50 rounded-xl p-4 border border-indigo-500/30 shadow-lg">
-              <h3 className="font-bold mb-3 text-lg">Your Guesses</h3>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-bold text-lg">Your Guesses</h3>
+              {wordLength > 0 && (
+                <span className="bg-indigo-600/50 text-indigo-200 text-sm px-3 py-1 rounded-full border border-indigo-500/30">
+                  {wordLength} letters
+                </span>
+              )}
+            </div>
               {guesses.length === 0 ? (
                 <p className="text-indigo-300/70 text-center py-4">No guesses yet</p>
               ) : (
