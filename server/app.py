@@ -22,8 +22,12 @@ nltk.download('wordnet', quiet=True)
 from nltk.corpus import words,wordnet
 
 app = Flask(__name__)
+# Configure CORS based on environment
 if os.environ.get('FLASK_ENV') == 'production':
-    CORS(app, origins=['https://*.vercel.app'])
+    CORS(app, origins=[
+        'https://*.vercel.app',  # Allow all Vercel deployments
+        'http://localhost:3000',  # For local testing
+    ])
 else:
     CORS(app)
 
@@ -155,64 +159,89 @@ def is_valid_word(word):
     return word.lower() in ENGLISH_WORDS
 
 def initialize_models():
-    """Initialize image generation and text models"""
+    """Initialize lightweight models optimized for cloud deployment"""
     global image_model, text_classifier, text_generator
+    
+    print("Initializing models for cloud deployment...")
 
-    try:
-        print("Loading image generation model...")
-        model_id = "runwayml/stable-diffusion-v1-5"
-        os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Ensure no CUDA usage
+    # ========== STABLE DIFFUSION MODEL (COMMENTED OUT FOR CLOUD DEPLOYMENT) ==========
+    # Stable Diffusion requires ~3-4GB RAM and is too heavy for free tier cloud deployment
+    # We use OpenAI DALL-E API + cached images instead
+    
+    # try:
+    #     print("Loading image generation model...")
+    #     model_id = "runwayml/stable-diffusion-v1-5"
+    #     os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Ensure no CUDA usage
+    #
+    #     image_model = StableDiffusionPipeline.from_pretrained(
+    #         model_id,
+    #         torch_dtype=torch.float32,
+    #         safety_checker=None,
+    #         use_safetensors=True,
+    #         low_cpu_mem_usage=True
+    #     )
+    #
+    #     image_model.to("cpu")
+    #     image_model.enable_attention_slicing(1)
+    #     
+    #     try:
+    #         image_model.scheduler = DDIMScheduler.from_config(image_model.scheduler.config)
+    #     except Exception as e:
+    #         print(f"Could not set DDIM scheduler: {e}")
+    # except Exception as e:
+    #     print(f"Error loading image generation model: {e}")
+    #     image_model = None
+    
+    # Skip Stable Diffusion for cloud deployment
+    print("⚠️  Skipping Stable Diffusion model (too heavy for cloud free tier)")
+    print("✅ Using OpenAI DALL-E API + cached images instead")
+    image_model = None
 
-        image_model = StableDiffusionPipeline.from_pretrained(
-            model_id,
-            torch_dtype=torch.float32,
-            safety_checker=None,
-            use_safetensors=True,
-            low_cpu_mem_usage=True
-        )
-
-        image_model.to("cpu")
-        image_model.enable_attention_slicing(1)
-        
-        try:
-            image_model.scheduler = DDIMScheduler.from_config(image_model.scheduler.config)
-        except Exception as e:
-            print(f"Could not set DDIM scheduler: {e}")
-    except Exception as e:
-        print(f"Error loading image generation model: {e}")
-        image_model = None
-
+    # ========== BART TEXT CLASSIFICATION MODEL ==========
     try:
         print("Loading BART zero-shot classification model...")
-        from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
+        from transformers import pipeline
         
-        # Use smaller version if memory is a concern
-        model_name = "facebook/bart-large-mnli"  # Can also use "facebook/bart-base-mnli" if memory is limited
+        # Clear memory before loading (important for cloud deployment)
+        import gc
+        gc.collect()
         
-        # Load tokenizer and model with proper settings
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        # Use bart-large-mnli (verified working model)
+        model_name = "facebook/bart-large-mnli"
         
-        # Configure for CPU or GPU
-        device = 0 if torch.cuda.is_available() else -1
+        print(f"Downloading {model_name}...")
         
-        # Create the classification pipeline
+        # Force CPU for cloud deployment (no GPU on free tier)
+        device = -1
+        
+        # Create the classification pipeline (simplified approach)
         text_classifier = pipeline(
             "zero-shot-classification",
-            model=model,
-            tokenizer=tokenizer,
+            model=model_name,
             device=device
         )
-        print("BART classification model loaded successfully!")
+        print("✅ BART classification model loaded successfully!")
+        
+        # Log memory usage for debugging
+        try:
+            import psutil
+            process = psutil.Process(os.getpid())
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            print(f"📊 Memory usage after loading models: {memory_mb:.1f} MB")
+        except:
+            pass
+            
     except Exception as e:
-        print(f"Error loading BART classification model: {e}")
+        print(f"⚠️ Error loading BART classification model: {e}")
+        print("✅ Falling back to simple rule-based classifier")
+        
         # Define fallback only if BART fails
         def simple_classifier(text, labels, hypothesis_template=None):
             print(f"Using fallback classifier for: {text}, {labels}")
             scores = [sum(1 for c in text.lower() if c in label.lower()) / max(len(text), len(label)) for label in labels]
             return {"scores": scores, "labels": labels, "sequence": text}
         text_classifier = lambda text, labels, hypothesis_template=None: simple_classifier(text, labels)
-        print("Fallback text classifier initialized")
+        print("✅ Fallback text classifier initialized")
 
 def generate_image_with_model(word):
     """Generate an image using the local Stable Diffusion model"""
@@ -1119,12 +1148,13 @@ if __name__ == "__main__":
         load_dotenv()
     
     # Initialize models and cache
+    print("Initializing ImageWordle Backend...")
     initialize_models()
     cache_dir = get_cache_directory()
     clue_cache = load_clue_cache()
     
-    # Get port from environment variable (Render sets this automatically)
-    port = int(os.environ.get('PORT', 5000))
+    # Get port - Cloud Run uses PORT environment variable
+    port = int(os.environ.get('PORT', 8080))
     
     # Disable debug in production
     debug_mode = os.environ.get('FLASK_ENV') != 'production'
