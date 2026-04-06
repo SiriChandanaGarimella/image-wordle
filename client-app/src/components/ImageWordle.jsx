@@ -4,7 +4,7 @@ import { Heart, RefreshCw, Info, X, CheckCircle, AlertCircle, Lightbulb, Chevron
 const ImageWordle = () => {
   const [image, setImage] = useState(null);
   const [guess, setGuess] = useState("");
-  const [message, setMessage] = useState("Welcome to ImageWordle! Start a new game to begin.");
+  const [message, setMessage] = useState("Welcome to Pixordle! Start a new game to begin.");
   const [lives, setLives] = useState(5);
   const [difficulty, setDifficulty] = useState("Medium");
   const [gameOver, setGameOver] = useState(false);
@@ -414,11 +414,9 @@ const ImageWordle = () => {
         {/* Header section */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg shadow-lg">
-              <span className="text-3xl">🎨</span>
-            </div>
+            <img src="/favicon.svg" alt="Pixordle logo" className="w-12 h-12 rounded-lg shadow-lg" />
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-              ImageWordle
+              Pixordle
             </h1>
           </div>
           
