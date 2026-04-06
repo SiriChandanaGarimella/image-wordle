@@ -8,10 +8,6 @@ Pillow==10.0.1
 opencv-python-headless==4.8.1.78
 numpy==1.25.2
 
-# Machine Learning (CPU-only torch for lightweight NLI model)
-torch==2.0.1+cpu
-transformers==4.33.2
-
 # OpenAI API
 openai>=1.0.0
 requests==2.31.0

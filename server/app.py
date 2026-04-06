@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
-import torch
 import numpy as np
 import cv2
 from PIL import Image, ImageDraw
@@ -13,7 +12,6 @@ import hashlib
 import json
 import re
 import requests
-from transformers import pipeline
 from openai import OpenAI
 import psutil
 import nltk
@@ -197,50 +195,10 @@ def initialize_models():
     print("✅ Using OpenAI DALL-E API + cached images instead")
     image_model = None
 
-    # ========== BART TEXT CLASSIFICATION MODEL ==========
-    try:
-        print("Loading BART zero-shot classification model...")
-        from transformers import pipeline
-        
-        # Clear memory before loading (important for cloud deployment)
-        import gc
-        gc.collect()
-        
-        # Use a lightweight NLI model (~265MB vs bart-large-mnli's 1.6GB)
-        model_name = "typeform/distilbert-base-uncased-mnli"
-        
-        print(f"Downloading {model_name}...")
-        
-        # Force CPU for cloud deployment (no GPU on free tier)
-        device = -1
-        
-        # Create the classification pipeline (simplified approach)
-        text_classifier = pipeline(
-            "zero-shot-classification",
-            model=model_name,
-            device=device
-        )
-        print("✅ BART classification model loaded successfully!")
-        
-        # Log memory usage for debugging
-        try:
-            process = psutil.Process(os.getpid())
-            memory_mb = process.memory_info().rss / 1024 / 1024
-            print(f"📊 Memory usage after loading models: {memory_mb:.1f} MB")
-        except:
-            pass
-            
-    except Exception as e:
-        print(f"⚠️ Error loading BART classification model: {e}")
-        print("✅ Falling back to simple rule-based classifier")
-        
-        # Define fallback only if BART fails
-        def simple_classifier(text, labels, hypothesis_template=None):
-            print(f"Using fallback classifier for: {text}, {labels}")
-            scores = [sum(1 for c in text.lower() if c in label.lower()) / max(len(text), len(label)) for label in labels]
-            return {"scores": scores, "labels": labels, "sequence": text}
-        text_classifier = lambda text, labels, hypothesis_template=None: simple_classifier(text, labels)
-        print("✅ Fallback text classifier initialized")
+    # NLI model skipped — too large (400MB+) for free tier 512MB RAM limit.
+    # process_guess uses character-overlap similarity as feedback instead.
+    print("✅ Skipping NLI model (free tier memory constraint). Using rule-based similarity.")
+    text_classifier = None
 
 def generate_image_with_model(word):
     """Generate an image using the local Stable Diffusion model"""
