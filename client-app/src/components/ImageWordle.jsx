@@ -24,7 +24,7 @@ const ImageWordle = () => {
   const [gameStarted, setGameStarted] = useState(false);
   
   // API base URL - should point to your Flask backend
-  const API_URL = process.env.REACT_APP_API_URL || 'hhttp://127.0.0.1:8080/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8080/api';
   
   // Generate a session ID on component mount
   useEffect(() => {

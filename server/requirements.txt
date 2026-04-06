@@ -8,14 +8,16 @@ Pillow==10.0.1
 opencv-python-headless==4.8.1.78
 numpy==1.25.2
 
-# Machine Learning
-torch==2.0.1
-torchvision==0.15.2
+# Machine Learning (CPU-only torch for lightweight NLI model)
+torch==2.0.1+cpu
 transformers==4.33.2
 
 # OpenAI API
-openai==0.27.0
+openai>=1.0.0
 requests==2.31.0
+
+# NLP
+nltk==3.8.1
 
 # Environment
 python-dotenv==1.0.0

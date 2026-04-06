@@ -13,9 +13,9 @@ import hashlib
 import json
 import re
 import requests
-from diffusers import StableDiffusionPipeline, DDIMScheduler
 from transformers import pipeline
-import openai
+from openai import OpenAI
+import psutil
 import nltk
 nltk.download('words', quiet=True)
 nltk.download('wordnet', quiet=True)
@@ -93,9 +93,9 @@ def generate_random_word(category):
                      truncation=True)
     for response in responses:
         generated_text = response['generated_text'][len(prompt):].strip()
-        words = generated_text.split()
-        
-        for word in words:
+        generated_words = generated_text.split()
+
+        for word in generated_words:
             clean_word = ''.join(c for c in word if c.isalpha())
             
             if clean_word and 5<= len(clean_word) <= 7:
@@ -206,8 +206,8 @@ def initialize_models():
         import gc
         gc.collect()
         
-        # Use bart-large-mnli (verified working model)
-        model_name = "facebook/bart-large-mnli"
+        # Use a lightweight NLI model (~265MB vs bart-large-mnli's 1.6GB)
+        model_name = "typeform/distilbert-base-uncased-mnli"
         
         print(f"Downloading {model_name}...")
         
@@ -224,7 +224,6 @@ def initialize_models():
         
         # Log memory usage for debugging
         try:
-            import psutil
             process = psutil.Process(os.getpid())
             memory_mb = process.memory_info().rss / 1024 / 1024
             print(f"📊 Memory usage after loading models: {memory_mb:.1f} MB")
@@ -480,12 +479,17 @@ def load_clue_cache():
     except:
         return {}
 
-def save_clue_cache(clue_cache):
+def save_clue_cache(cache_data):
     """Save clue cache to disk"""
     with open(CLUE_CACHE_PATH, "w") as f:
-        json.dump(clue_cache, f, indent=2)
+        json.dump(cache_data, f, indent=2)
 
 clue_cache = load_clue_cache()
+
+# Initialize models at module level so gunicorn workers load them on startup
+print("Initializing ImageWordle Backend...")
+initialize_models()
+get_cache_directory()
 
 def generate_dynamic_hints(word, word_category):
     """Generate hints for a word when API-based hints are unavailable"""
@@ -567,8 +571,11 @@ def generate_clues(word, num_clues=2, difficulty="Medium"):
         return clue_cache[word][difficulty]
 
     try:
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError("OPENAI_API_KEY not set")
+        client = OpenAI(api_key=openai_api_key)
+
         # Define clue styles based on difficulty level
         if difficulty == "Easy":
             system_prompt = "You are a helpful assistant that generates clear, obvious clues for a word guessing game. The clues should be easy to understand. Never use the target word in the clue."
@@ -604,14 +611,14 @@ def generate_clues(word, num_clues=2, difficulty="Medium"):
                 {"role": "user", "content": f"Generate a {difficulty.lower()}-level clue for the word '{word}'. {user_prompt}"}
             ]
 
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=messages,
                 max_tokens=60,
                 temperature=temperature
             )
 
-            reply = response["choices"][0]["message"]["content"].strip()
+            reply = response.choices[0].message.content.strip()
             clue = re.split(r'[.!?]', reply)[0].strip()
 
             if not clue.endswith(('.', '!', '?')):
@@ -1062,6 +1069,7 @@ def new_game():
         session_id = data.get('session_id', str(time.time()))
         difficulty = data.get('difficulty', 'Medium')
         
+        cleanup_old_games()
         result = create_new_game(session_id, difficulty)
         return jsonify(result)
     except Exception as e:
@@ -1071,7 +1079,7 @@ def new_game():
         })
 
 @app.route('/api/guess', methods=['POST'])
-def guess():
+def submit_guess():
     """Process a guess"""
     try:
         data = request.json
@@ -1141,17 +1149,10 @@ def root():
 # Run the application
 if __name__ == "__main__":
     from dotenv import load_dotenv
-    import psutil
     
     # Load environment variables
     if os.path.exists('.env'):
         load_dotenv()
-    
-    # Initialize models and cache
-    print("Initializing ImageWordle Backend...")
-    initialize_models()
-    cache_dir = get_cache_directory()
-    clue_cache = load_clue_cache()
     
     # Get port - Cloud Run uses PORT environment variable
     port = int(os.environ.get('PORT', 8080))
