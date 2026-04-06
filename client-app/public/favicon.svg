@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#1e1b4b"/>
+
+  <!-- Pixelated grid pattern (blurred image effect) -->
+  <!-- Row 1 -->
+  <rect x="4"  y="4"  width="10" height="10" rx="1" fill="#6366f1" opacity="0.9"/>
+  <rect x="16" y="4"  width="10" height="10" rx="1" fill="#818cf8" opacity="0.6"/>
+  <rect x="28" y="4"  width="10" height="10" rx="1" fill="#4f46e5" opacity="0.8"/>
+  <rect x="40" y="4"  width="10" height="10" rx="1" fill="#6366f1" opacity="0.5"/>
+  <rect x="52" y="4"  width="8"  height="10" rx="1" fill="#818cf8" opacity="0.7"/>
+
+  <!-- Row 2 -->
+  <rect x="4"  y="16" width="10" height="10" rx="1" fill="#818cf8" opacity="0.7"/>
+  <rect x="16" y="16" width="10" height="10" rx="1" fill="#e0e7ff" opacity="0.9"/>
+  <rect x="28" y="16" width="10" height="10" rx="1" fill="#6366f1" opacity="0.6"/>
+  <rect x="40" y="16" width="10" height="10" rx="1" fill="#4f46e5" opacity="0.8"/>
+  <rect x="52" y="16" width="8"  height="10" rx="1" fill="#6366f1" opacity="0.6"/>
+
+  <!-- Row 3 -->
+  <rect x="4"  y="28" width="10" height="10" rx="1" fill="#4f46e5" opacity="0.8"/>
+  <rect x="16" y="28" width="10" height="10" rx="1" fill="#6366f1" opacity="0.7"/>
+  <rect x="28" y="28" width="10" height="10" rx="1" fill="#818cf8" opacity="0.9"/>
+  <rect x="40" y="28" width="10" height="10" rx="1" fill="#e0e7ff" opacity="0.5"/>
+  <rect x="52" y="28" width="8"  height="10" rx="1" fill="#4f46e5" opacity="0.7"/>
+
+  <!-- Row 4 -->
+  <rect x="4"  y="40" width="10" height="10" rx="1" fill="#6366f1" opacity="0.6"/>
+  <rect x="16" y="40" width="10" height="10" rx="1" fill="#4f46e5" opacity="0.8"/>
+  <rect x="28" y="40" width="10" height="10" rx="1" fill="#6366f1" opacity="0.5"/>
+  <rect x="40" y="40" width="10" height="10" rx="1" fill="#818cf8" opacity="0.9"/>
+  <rect x="52" y="40" width="8"  height="10" rx="1" fill="#6366f1" opacity="0.8"/>
+
+  <!-- Row 5 -->
+  <rect x="4"  y="52" width="10" height="8" rx="1" fill="#818cf8" opacity="0.7"/>
+  <rect x="16" y="52" width="10" height="8" rx="1" fill="#6366f1" opacity="0.6"/>
+  <rect x="28" y="52" width="10" height="8" rx="1" fill="#4f46e5" opacity="0.9"/>
+  <rect x="40" y="52" width="10" height="8" rx="1" fill="#6366f1" opacity="0.7"/>
+  <rect x="52" y="52" width="8"  height="8" rx="1" fill="#818cf8" opacity="0.5"/>
+
+  <!-- "P" letter overlay (white, bold, centered) -->
+  <text x="32" y="44" font-family="'Arial Black', Arial, sans-serif" font-weight="900"
+        font-size="36" fill="white" text-anchor="middle" opacity="0.95">P</text>
+</svg>
