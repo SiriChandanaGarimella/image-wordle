@@ -15,6 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt \
 # Pre-download NLTK data at build time (avoids cold-start delay)
 RUN python -c "import nltk; nltk.download('words'); nltk.download('wordnet')"
 
+# Pre-download the NLI model at build time (avoids Render health check timeout)
+RUN python -c "from transformers import pipeline; pipeline('zero-shot-classification', model='typeform/distilbert-base-uncased-mnli')"
+
 COPY . .
 
 EXPOSE 8080

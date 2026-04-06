@@ -25,7 +25,7 @@ app = Flask(__name__)
 # Configure CORS based on environment
 if os.environ.get('FLASK_ENV') == 'production':
     CORS(app, origins=[
-        'https://*.vercel.app',  # Allow all Vercel deployments
+        'https://pixordle.vercel.app/*',  # Allow our Vercel frontend
         'http://localhost:3000',  # For local testing
     ])
 else:
